@@ -18,7 +18,7 @@ class RpnTest < Test::Unit::TestCase
     'test8' => ['(x*a+y*b)*(a*b)','x a * y b * + a b * *'],
     'test9' => ['(a+b)*(c+d)*(e+f)','a b + c d + * e f + *'],
   )
-  def test_equal(data)
+  def test_rpn(data)
     exp, rpn_exp = data
     assert_equal(Rpn.get_rpn(exp), rpn_exp)
   end

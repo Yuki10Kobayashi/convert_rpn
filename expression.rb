@@ -1,5 +1,6 @@
 # coding:utf-8
 
+# 逆ポーランド記法モジュール
 module Rpn
   # 逆ポーランド記法への変換
   def self.get_rpn exp
@@ -98,5 +99,24 @@ module Rpn
     end
 
     return rpn_exp
+  end
+end
+
+# 計算モジュール
+module Calculation
+
+  # 加算処理
+  def self.add exp_left, exp_right
+
+  end
+
+  # 減算処理
+  def self.sub exp_left, exp_right
+
+  end
+
+  # 乗算処理
+  def self.multipl exp_left, exp_right
+
   end
 end
