@@ -22,7 +22,7 @@ module Rpn
 
     exp_str_list = exp.split("")
 
-    exp_str_list.each.with_index {|token, index|
+    exp_str_list.each.with_index{|token, index|
 
       # 数字 or アルファベットの場合
       if /[0-9a-z]/ =~ token then
@@ -105,18 +105,30 @@ end
 # 計算モジュール
 module Calculation
 
-  # 加算処理
-  def self.add exp_left, exp_right
+  # 数値型判定
+  def self.integer_string? str
+    Integer(str)
+    true
+  rescue ArgumentError
+    false
+  end
 
+  # 加算処理
+  def self.add left_exp, right_exp
+    if integer_string?(left_exp) && integer_string?(right_exp) then
+      return left_exp.to_i + right_exp.to_i
+    end
   end
 
   # 減算処理
-  def self.sub exp_left, exp_right
+  def self.sub left_exp, right_exp
+    puts "minus"
 
   end
 
   # 乗算処理
-  def self.multipl exp_left, exp_right
+  def self.multipl left_exp, right_exp
+    puts "multipl"
 
   end
 end

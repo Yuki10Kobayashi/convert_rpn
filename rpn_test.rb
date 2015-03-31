@@ -22,4 +22,22 @@ class RpnTest < Test::Unit::TestCase
     exp, rpn_exp = data
     assert_equal(Rpn.get_rpn(exp), rpn_exp)
   end
+
+  data(
+    'test1' => '123',
+    'test4' => '-5',
+  )
+  def test_integer_str_true(data)
+    str = data
+    assert_true(Calculation.integer_string?(str))
+  end                
+
+  data(
+    'test2' => 'abc',
+    'test3' => '1+2',
+  )
+  def test_integer_str_false(data)
+    str = data
+    assert_false(Calculation.integer_string?(str))
+  end                
 end
