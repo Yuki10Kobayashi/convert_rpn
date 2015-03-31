@@ -29,9 +29,11 @@ module Rpn
 
         # 次の要素が数字orアルファベット以外で
         # 計算用演算子がスタックに存在する場合、Popする。
-        if exp_str_list[index + 1] != nil && /[0-9a-z]/ =~ exp_str_list[index + 1] then
+        if /[0-9a-z]/ =~ exp_str_list[index + 1] then
           next
-        end 
+        else
+          rpn_exp << " "
+        end
 
         if !stack.empty? then
           poped_token = stack.pop
@@ -49,6 +51,7 @@ module Rpn
             # 次の演算子よりも優先度が高ければ式に追加する
             if next_operator != nil && (priority_list[next_operator] <= priority_list[poped_token]) then
               rpn_exp << poped_token
+              rpn_exp << " "
             else
               stack.push(poped_token)
             end
@@ -70,11 +73,13 @@ module Rpn
         poped_token = stack.pop
         while poped_token != "(" do
           rpn_exp << poped_token
+          rpn_exp << " "
           poped_token = stack.pop
         end
         # "("の直前の演算子が"("以外ならpopする
         if !stack.empty? && stack[stack.length - 1] !="(" then
           rpn_exp << stack.pop
+          rpn_exp << " "
         end
       end
     }
@@ -83,10 +88,15 @@ module Rpn
     poped_token = stack.pop
     while poped_token != nil do
       rpn_exp << poped_token
+      rpn_exp << " "
       poped_token = stack.pop
+    end
+
+    # 最後にブランクが含まれる場合、除外する。
+    if rpn_exp[-1] == " " then
+      rpn_exp.slice!(-1)
     end
 
     return rpn_exp
   end
 end
-
