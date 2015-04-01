@@ -23,21 +23,49 @@ class RpnTest < Test::Unit::TestCase
     assert_equal(Rpn.get_rpn(exp), rpn_exp)
   end
 
+  # 文字列がInt型の数字であるか確認する。
   data(
     'test1' => '123',
-    'test4' => '-5',
+    'test2' => '-5',
   )
   def test_integer_str_true(data)
     str = data
     assert_true(Calculation.integer_string?(str))
-  end                
+  end
 
+  # 文字列が数字でないことを確認する。
   data(
-    'test2' => 'abc',
-    'test3' => '1+2',
+    'test1' => 'abc',
+    'test2' => '1+2',
   )
   def test_integer_str_false(data)
     str = data
     assert_false(Calculation.integer_string?(str))
-  end                
+  end
+
+  # 加算結果を確認する
+  data(
+    'test1' => ['50', '30', '80'],
+    'test2' => ['-10', '20', '10'],
+    'test4' => ['0', '0', '0'],
+    # 左辺が変数
+    'test5' => ['x', '50', 'x + 50'],
+    'test6' => ['x - 10', '50', 'x + 40'],
+    'test7' => ['x - 30', '30', 'x'],
+    'test8' => ['x - 60', '30', 'x - 30'],
+    'test9' => ['-x - 60', '30', '-x - 30'],
+    'test10' => ['10 + x', '40', '50 + x'],
+    'test11' => ['-30 + x', '30', 'x'],
+    'test12' => ['-70 - x', '30', '-40 - x'],
+    'test13' => ['2x - 3y + 10', '30', '2x - 3y + 40'],
+    # 右辺が変数
+    'test14' => ['50', 'x', 'x + 50'],
+    'test15' => ['50', 'x - 10', 'x + 40'],
+
+    # 両辺が変数
+  )
+  def test_add(data)
+    left_exp, right_exp, ret = data
+    assert_equal(Calculation.add(left_exp, right_exp), ret)
+  end
 end

@@ -1,5 +1,7 @@
 # coding:utf-8
 
+require 'pry'
+
 # 逆ポーランド記法モジュール
 module Rpn
   # 逆ポーランド記法への変換
@@ -95,7 +97,7 @@ module Rpn
 
     # 最後にブランクが含まれる場合、除外する。
     if rpn_exp[-1] == " " then
-      rpn_exp.slice!(-1)
+      rpn_exp.chop!
     end
 
     return rpn_exp
@@ -115,9 +117,68 @@ module Calculation
 
   # 加算処理
   def self.add left_exp, right_exp
-    if integer_string?(left_exp) && integer_string?(right_exp) then
-      return left_exp.to_i + right_exp.to_i
+
+    left_int = integer_string?(left_exp)
+    right_int = integer_string?(right_exp)
+    result = ""
+
+    # 両辺が数値の場合
+    if left_int && right_int then
+      result = (left_exp.to_i + right_exp.to_i).to_s
+
+    # 左辺または右辺が数値の場合
+    elsif left_int || right_int then
+
+      # 左辺が数字でなければ、右辺と左辺を入れ替える。
+      if left_int then
+        left_exp, right_exp = right_exp, left_exp
+      end
+
+      # 左辺が単項目の変数のみの場合
+      if left_exp.length == 1 then
+        result = "#{left_exp} + #{right_exp}"
+        return result
+      end
+
+        left_exp_list = left_exp.split(" ")
+        left_exp_list.each.with_index{|token, index|
+
+        # tokenが数字の場合
+        if integer_string? token then
+          if left_exp_list[index - 1] == "\-" then
+
+            calc_val = right_exp.to_i - token.to_i
+            if calc_val == 0 then
+              result.slice!(-2, 2)
+            elsif calc_val > 0 then
+              result.slice!(-2, 2)
+              result << "+ #{calc_val} "
+            else
+              result << "#{calc_val.abs} "
+            end
+          else
+            calc_val = token.to_i + right_exp.to_i
+            if calc_val != 0 then
+              result << "#{calc_val.to_s} "
+            end
+          end
+
+        # tokenが数字ではない場合
+        else
+          if /[a-z]/ =~ token then
+            result << "#{token} "
+          else
+            if !result.empty? then
+              result << "#{token} "
+            end
+          end
+        end
+      }
+      result.chop!
+    else
+      result = "#{left_exp} + #{right_exp}"
     end
+    return result
   end
 
   # 減算処理
