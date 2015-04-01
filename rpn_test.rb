@@ -43,6 +43,22 @@ class RpnTest < Test::Unit::TestCase
     assert_false(Calculation.integer_string?(str))
   end
 
+  # 変数同士の加算結果を確認する。
+  data(
+    # 右辺と左辺が異なる場合
+    'test1' => ['x', 'y', 'x + y'],
+    'test2' => ['xy', '-4y', 'xy - 4y'],
+    'test3' => ['-x', '4y', '-x + 4y'],
+    'test4' => ['5x', 'y', '5x + y'],
+    'test5' => ['5xy', 'x2y', '5xy + x2y'],
+    # 右辺と左辺が同じ場合
+    #'test5' => ['x', 'x', '2x'],
+  )
+  def test_add_variable(data)
+    left_exp, right_exp, ret = data
+    assert_equal(Calculation.add_variable(left_exp, right_exp), ret)
+  end
+
   # 加算結果を確認する
   data(
     'test1' => ['50', '30', '80'],
@@ -61,8 +77,17 @@ class RpnTest < Test::Unit::TestCase
     # 右辺が変数
     'test14' => ['50', 'x', 'x + 50'],
     'test15' => ['50', 'x - 10', 'x + 40'],
-
+    'test16' => ['30', 'x - 30', 'x'],
+    'test17' => ['30', 'x - 60', 'x - 30'],
+    'test18' => ['30', '-x - 60', '-x - 30'],
+    'test19' => ['40', '10 + x', '50 + x'],
+    'test20' => ['30', '-30 + x', 'x'],
+    'test21' => ['30', '-70 - x', '-40 - x'],
+    'test22' => ['30', '2x - 3y + 10', '2x - 3y + 40'],
     # 両辺が変数
+    'test23' => ['x', 'y', 'x + y'],
+    'test24' => ['-x', 'y', '-x + y'],
+    #'test25' => ['x', 'x', '2x'],
   )
   def test_add(data)
     left_exp, right_exp, ret = data

@@ -115,6 +115,31 @@ module Calculation
     false
   end
 
+  # 右辺・左辺ともに変数を含む場合の加算処理
+  def self.add_variable left_exp, right_exp
+
+    result = ""
+
+    # 計算条件判定のため、一度変数のみに分割する。
+    left_val = left_exp.delete("\-")
+    # TODO 先頭の数字を除外する
+    right_val = right_exp.delete("\-")
+    # TODO 先頭の数字を除外する
+
+    # 変数が同一であれば、加算処理を行う。
+    if left_val == right_val then
+
+    else
+      if right_exp.slice(0) == "\-" then
+        result = "#{left_exp} - #{right_exp.delete('\-')}"
+      else
+        result = "#{left_exp} + #{right_exp}"
+      end
+    end
+
+    return result
+  end
+
   # 加算処理
   def self.add left_exp, right_exp
 
@@ -175,8 +200,22 @@ module Calculation
         end
       }
       result.chop!
+
+    # 両辺が変数の場合
     else
-      result = "#{left_exp} + #{right_exp}"
+
+      left_exp_list = left_exp.split(" ")
+      right_exp_list = right_exp.split(" ")
+
+      if left_exp_list.length == 1 && right_exp_list.length == 1 then
+
+        result = "#{left_exp} + #{right_exp}"
+      elsif left_exp_list.length > 1 && right_exp_list.length > 1 then
+        result = "hogeeeeeeeeeeeeeeeeee"
+      else
+        result = "hugaaaaaaaaaaaaaaaaaaa"
+
+      end
     end
     return result
   end
