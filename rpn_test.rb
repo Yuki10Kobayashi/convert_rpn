@@ -45,14 +45,18 @@ class RpnTest < Test::Unit::TestCase
 
   # 変数同士の加算結果を確認する。
   data(
-    # 右辺と左辺が異なる場合
+    # 右辺と左辺の変数が異なる場合
     'test1' => ['x', 'y', 'x + y'],
     'test2' => ['xy', '-4y', 'xy - 4y'],
     'test3' => ['-x', '4y', '-x + 4y'],
     'test4' => ['5x', 'y', '5x + y'],
     'test5' => ['5xy', 'x2y', '5xy + x2y'],
-    # 右辺と左辺が同じ場合
-    #'test5' => ['x', 'x', '2x'],
+    # 右辺と左辺の変数が同じ場合
+    'test6' => ['x', 'x', '2x'],
+    'test7' => ['3x', '4x', '7x'],
+    'test8' => ['-x', '5x', '4x'],
+    'test9' => ['-x', 'x', ''],
+    'test10' => ['3x', '-3x', ''],
   )
   def test_add_variable(data)
     left_exp, right_exp, ret = data

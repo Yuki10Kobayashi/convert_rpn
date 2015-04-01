@@ -122,12 +122,41 @@ module Calculation
 
     # 計算条件判定のため、一度変数のみに分割する。
     left_val = left_exp.delete("\-")
-    # TODO 先頭の数字を除外する
+    while /[0-9]/ =~ left_val.chr do
+      left_val.slice!(0)
+    end
     right_val = right_exp.delete("\-")
-    # TODO 先頭の数字を除外する
+    while /[0-9]/ =~ right_val.chr do
+      right_val.slice!(0)
+    end
 
     # 変数が同一であれば、加算処理を行う。
     if left_val == right_val then
+
+      # 変数を除外した項目同士で計算処理を行う。
+      left_pre = left_exp.delete(left_val)
+      right_pre = right_exp.delete(right_val)
+
+      case left_pre
+      when "" then
+        left_pre = "1"
+      when "\-" then
+        left_pre = "\-1"
+      end
+
+      case right_pre
+      when "" then
+        right_pre = "1"
+      when "\-" then
+        right_pre = "\-1"
+      end 
+
+      result = (left_pre.to_i + right_pre.to_i).to_s
+      if result == "0" then
+        result = ""
+      else
+        result << left_val
+      end
 
     else
       if right_exp.slice(0) == "\-" then
