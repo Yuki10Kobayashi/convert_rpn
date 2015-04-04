@@ -63,6 +63,16 @@ class RpnTest < Test::Unit::TestCase
     assert_equal(Calculation.add_variable(left_exp, right_exp), ret)
   end
 
+  # 変数を含む多項式の計算結果を確認する。
+  #data(
+    #'test1' => ['x + 1', 'y', 'x + y + 1'],
+    #'test2' => ['x + 1', 'y + 2', 'x + y + 3'],
+  #)
+  #def test_poloyromial_add(data)
+    #left_exp, right_exp, ret = data
+    #assert_equal(Calculation.polyromial_add(left_exp, right_exp), ret)
+  #end
+
   # 加算結果を確認する
   data(
     'test1' => ['50', '30', '80'],
@@ -91,10 +101,33 @@ class RpnTest < Test::Unit::TestCase
     # 両辺が変数
     'test23' => ['x', 'y', 'x + y'],
     'test24' => ['-x', 'y', '-x + y'],
-    #'test25' => ['x', 'x', '2x'],
+    'test25' => ['x', 'x', '2x'],
+    'test26' => ['-x', 'x', ''],
+    #'test26' => ['2x + 1', 'x', '3x + 1'],
   )
   def test_add(data)
     left_exp, right_exp, ret = data
     assert_equal(Calculation.add(left_exp, right_exp), ret)
+  end
+
+  # 変数同士の減算結果を確認する。
+  data(
+    # 右辺と左辺の変数が異なる場合
+    'test1' => ['x', 'y', 'x - y'],
+    'test2' => ['xy', '-4y', 'xy + 4y'],
+    'test3' => ['-x', '4y', '-x - 4y'],
+    'test4' => ['5x', 'y', '5x - y'],
+    'test5' => ['5xy', 'x2y', '5xy - x2y'],
+    # 右辺と左辺の変数が同じ場合
+    'test6' => ['x', 'x', ''],
+    'test7' => ['3x', '4x', '-x'],
+    'test8' => ['-x', '5x', '-6x'],
+    'test9' => ['-x', 'x', '-2x'],
+    'test10' => ['3x', '-3x', '6x'],
+    'test11' => ['-2x', '-2x', ''],
+  )
+  def test_sub_variable(data)
+    left_exp, right_exp, ret = data
+    assert_equal(Calculation.sub_variable(left_exp, right_exp), ret)
   end
 end

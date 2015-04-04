@@ -149,7 +149,7 @@ module Calculation
         right_pre = "1"
       when "\-" then
         right_pre = "\-1"
-      end 
+      end
 
       result = (left_pre.to_i + right_pre.to_i).to_s
       if result == "0" then
@@ -164,6 +164,25 @@ module Calculation
       else
         result = "#{left_exp} + #{right_exp}"
       end
+    end
+
+    return result
+  end
+
+  # 多項式の加算処理
+  def self.polyromial_add left_exp, right_exp
+
+    left_exp_list = left_exp.split(" ")
+    right_exp_list = right_exp.split(" ")
+
+    # 両辺とも単項目
+    if left_exp_list.length == 1 && right_exp_list.length == 1 then
+      result = add_variable(left_exp, right_exp)
+
+    # 方辺または両辺とも複数項目
+    else
+      # TODO
+      result = add_variable(left_exp, right_exp)
     end
 
     return result
@@ -232,26 +251,101 @@ module Calculation
 
     # 両辺が変数の場合
     else
+      result = polyromial_add(left_exp, right_exp)
+    end
+    return result
+  end
 
-      left_exp_list = left_exp.split(" ")
-      right_exp_list = right_exp.split(" ")
+  # 右辺・左辺ともに変数を含む場合の減算処理
+  def self.sub_variable left_exp, right_exp
 
-      if left_exp_list.length == 1 && right_exp_list.length == 1 then
+    result = ""
 
-        result = "#{left_exp} + #{right_exp}"
-      elsif left_exp_list.length > 1 && right_exp_list.length > 1 then
-        result = "hogeeeeeeeeeeeeeeeeee"
+    # 計算条件判定のため、一度変数のみに分割する。
+    left_val = left_exp.delete("\-")
+    while /[0-9]/ =~ left_val.chr do
+      left_val.slice!(0)
+    end
+    right_val = right_exp.delete("\-")
+    while /[0-9]/ =~ right_val.chr do
+      right_val.slice!(0)
+    end
+
+    # 変数が同一であれば、減算処理を行う。
+    if left_val == right_val then
+
+      # 変数を除外した項目同士で計算処理を行う。
+      left_pre = left_exp.delete(left_val)
+      right_pre = right_exp.delete(right_val)
+
+      case left_pre
+      when "" then
+        left_pre = "1"
+      when "\-" then
+        left_pre = "\-1"
+      end
+
+      case right_pre
+      when "" then
+        right_pre = "1"
+      when "\-" then
+        right_pre = "\-1"
+      end
+
+      result = (left_pre.to_i - right_pre.to_i).to_s
+      if result == "0" then
+        result = ""
+      elsif result == "-1"
+        result = "-#{left_val}"
       else
-        result = "hugaaaaaaaaaaaaaaaaaaa"
+        result << left_val
+      end
 
+    else
+      if right_exp.slice(0) == "\-" then
+        result = "#{left_exp} + #{right_exp.delete('\-')}"
+      else
+        result = "#{left_exp} - #{right_exp}"
       end
     end
+
+    return result
+  end
+
+  # 多項式の減算処理
+  def self.polyromial_sub left_exp, right_exp
+
+    left_exp_list = left_exp.split(" ")
+    right_exp_list = right_exp.split(" ")
+
+    # 両辺とも単項目
+    if left_exp_list.length == 1 && right_exp_list.length == 1 then
+      result = sub_variable(left_exp, right_exp)
+
+    # 方辺または両辺とも複数項目
+    else
+      # TODO
+      result = sub_variable(left_exp, right_exp)
+    end
+
     return result
   end
 
   # 減算処理
   def self.sub left_exp, right_exp
-    puts "minus"
+
+    left_int = integer_string?(left_exp)
+    right_int = integer_string?(right_exp)
+
+    result = ""
+
+    # 両辺が数値の場合
+    if left_int && right_int then
+      result = (left_exp.to_i - right_exp.to_i).to_s
+    # 左辺または右辺が数値の場合
+    elsif
+
+    end
 
   end
 
