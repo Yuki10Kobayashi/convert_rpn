@@ -59,11 +59,24 @@ class RpnTest < Test::Unit::TestCase
     'test2' => ['x2yz', '', 'x2yz'],
     'test3' => ['3x', '3', 'x'],
     'test4' => ['3x2y', '3', 'x2y'],
+    'test5' => ['-3', '-3', ''],
   )
   def test_split_num_str(data)
     param, ret_num, ret_str = data
     ret = [ret_num, ret_str]
     assert_equal(Calculation.split_num_str(param), ret)
+  end
+
+  # 式の変数の並び替えを行う。
+  data(
+    'test1' => ['x2y', 'x2y'],
+    'test2' => ['x2y10', 'x2y10'],
+    'test3' => ['x2y10a5', 'a5x2y10'],
+    'test4' => ['x2ya5', 'a5x2y'],
+  )
+  def test_sort_exp_val(data)
+    param, ret = data
+    assert_equal(Calculation.sort_exp_val(param), ret)
   end
 
   # 変数同士の加減算結果を確認する。
@@ -161,30 +174,26 @@ class RpnTest < Test::Unit::TestCase
     'test3' => ['0', '0', '0'],
     # 左辺が変数
     'test5' => ['x', '5', '5x'],
-#    'test6' => ['x - 1', '5', '5x - 5'],
-#    'test7' => ['x - 3', '3', '3x - 9'],
-#    'test8' => ['x + 6', '-3', '-3x - 18'],
-#    'test9' => ['-x - 6', '3', '-3x - 18'],
-#    'test10' => ['1 + x', '4', '4 + 4x'],
-#    'test11' => ['-3 + x', '-3', '9 - 3x'],
-#    'test11-1' => ['-3 - x', '-3', '9 + 3x'],
-#    'test12' => ['-70 - x', '30', '-40 - x'],
-#    'test13' => ['2x - 3y + 10', '30', '2x - 3y + 40'],
-#    # 右辺が変数
-#    'test14' => ['50', 'x', 'x + 50'],
-#    'test15' => ['50', 'x - 10', 'x + 40'],
-#    'test16' => ['30', 'x - 30', 'x'],
-#    'test17' => ['30', 'x - 60', 'x - 30'],
-#    'test18' => ['30', '-x - 60', '-x - 30'],
-#    'test19' => ['40', '10 + x', '50 + x'],
-#    'test20' => ['30', '-30 + x', 'x'],
-#    'test21' => ['30', '-70 - x', '-40 - x'],
-#    'test22' => ['30', '2x - 3y + 10', '2x - 3y + 40'],
-#    # 両辺が変数
-#    'test23' => ['x', 'y', 'x + y'],
-#    'test24' => ['-x', 'y', '-x + y'],
-#    'test25' => ['x', 'x', '2x'],
-#    'test26' => ['-x', 'x', ''],
+    'test6' => ['x - 1', '5', '5x - 5'],
+    'test7' => ['x - 3', '3', '3x - 9'],
+    'test8' => ['x + 6', '-3', '-3x - 18'],
+    'test9' => ['-x - 6', '3', '-3x - 18'],
+    'test10' => ['1 + x', '4', '4 + 4x'],
+    'test11' => ['-3 + x', '-3', '9 - 3x'],
+    'test11-1' => ['-3 - x', '-3', '9 + 3x'],
+    'test12' => ['-7 - x', '3', '-21 - 3x'],
+    'test13' => ['2x - 3y + 10', '3', '6x - 9y + 30'],
+    # 右辺が変数
+    'test14' => ['5', 'x', '5x'],
+    'test15' => ['5', 'x - 1', '5x - 5'],
+    'test16' => ['3', '-x - 3', '-3x - 9'],
+    'test17' => ['-2', '-x - 4', '2x + 8'],
+    'test18' => ['3', '-x - 6', '-3x - 18'],
+    # 両辺が変数
+    'test19' => ['x', 'y', 'xy'],
+    'test24' => ['-x', 'y', '-xy'],
+    'test25' => ['2x + 3y', '5z + 6a', '10xz + 12ax + 15yz + 18ay'],
+    'test26' => ['-xy + 2a', 'bc + 3d', '-bcxy - 3dxy + 2abc + 6ad'],
   )
   def test_multipl(data)
     left_exp, right_exp, ret = data

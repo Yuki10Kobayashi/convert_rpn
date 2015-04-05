@@ -1,7 +1,5 @@
 # coding:utf-8
 
-require 'pry'
-
 # 逆ポーランド記法モジュール
 module Rpn
   # 逆ポーランド記法への変換
@@ -117,6 +115,7 @@ module Calculation
 
   # 数式から各変数のリストへ変換する。
   def self.exp_2_val_list exp
+
     exp_list = []
     exp_list_tmp = exp.split(" ")
     exp_list_tmp.each_with_index{|token, index|
@@ -134,6 +133,10 @@ module Calculation
     ret_num = ""
     ret_str = ""
 
+    if integer_string?(str) then
+      return str, ret_str
+    end
+
     if /[0-9]/ !~ str.slice(0) then
       return ret_num, str
     end
@@ -147,6 +150,53 @@ module Calculation
       end
     }
     return ret_num, ret_str
+  end
+
+  # 式の変数の並び替えを行う。
+  def self.sort_exp_val str
+
+    # 式を分解する
+    dep_str = ""
+    multi_num = ""
+    str_list = str.split("")
+    str_list.each_with_index{|token, index|
+      if /[0-9]/ =~ token then
+        multi_num << token
+        if /[0-9]/ !~ str_list[index + 1] then
+          (multi_num.to_i - 1).times{
+            dep_str << dep_str.slice(-1)
+          }
+          multi_num = ""
+        end
+      elsif 
+        dep_str << token
+      end
+    }
+
+    # 分解された式を文字列順にソートする。
+    sorted_str_list = dep_str.split("").sort
+
+    # ソートされた文字列を式の形に再変換
+    token_cnt = 1
+    last_token = ""
+    sorted_str = ""
+    while !sorted_str_list.empty? do
+      token = sorted_str_list.shift
+      if token == last_token then
+        token_cnt += 1
+      else
+        if token_cnt != 1 then
+          sorted_str << token_cnt.to_s
+          token_cnt = 1
+        end
+        last_token = token
+        sorted_str << token
+      end
+    end
+    if token_cnt != 1 then
+      sorted_str << token_cnt.to_s
+    end
+    return sorted_str
   end
 
   # 右辺・左辺ともに変数を含む場合の加減算処理
@@ -311,13 +361,6 @@ module Calculation
     return result
   end
 
-
-
-
-
-
-
-
   # 単項目の乗算処理
   def self.multipl_single left_val, right_val
     left_int = integer_string?(left_val)
@@ -334,16 +377,14 @@ module Calculation
     result = ""
 
     if left_pre == "\-" && right_pre != "\-" then
-      left_pre.delete!("\-")
       result << "\-"
     elsif left_pre != "\-" && right_pre == "\-" then
-      right_pre.delete!("\-")
       result << "\-"
     end
 
     # 各項目をそれぞれ数字部と文字列部に分割
-    left_num, left_str = split_num_str(left_val)
-    right_num, right_str = split_num_str(right_val)
+    left_num, left_str = split_num_str(left_val.delete("\-"))
+    right_num, right_str = split_num_str(right_val.delete("\-"))
 
     if left_num != "" && right_num != "" then
       result << "#{(left_num.to_i * right_num.to_i).to_s}"
@@ -354,88 +395,44 @@ module Calculation
     end
 
     result_str = "#{left_str}#{right_str}"
-    
-    result << result_str
-    
+
+    # 式を並び替える
+    result << sort_exp_val(result_str)
   end
 
   # 乗算処理
   def self.multipl left_exp, right_exp
-    result = ""
+    result_tmp = ""
     left_exp_list = exp_2_val_list(left_exp)
     right_exp_list = exp_2_val_list(right_exp)
 
-    left_exp_list.each{|left_val|
-      right_exp_list.each{|right_val|
-          result << "#{multipl_single(left_val, right_val)} "
+    left_exp_list.each_with_index{|left_val, left_index|
+      right_exp_list.each_with_index{|right_val, right_index|
+        single_ret = "#{multipl_single(left_val, right_val)} "
+
+        if left_index != 0 && single_ret.slice(0) != "\-"  then
+          result_tmp << "\+"
+        elsif right_index != 0 && single_ret.slice(0) != "\-" then
+          result_tmp << "\+"
+        end
+        result_tmp << single_ret
       }
     }
 
-#    # 左辺または右辺が数値の場合
-#    elsif left_int || right_int then
-#
-#      # 左辺が数字でなければ、右辺と左辺を入れ替える。
-#      if right_int then
-#        left_exp, right_exp = right_exp, left_exp
-#      end
-#
-#      # 右辺が単項目の変数のみの場合
-#      if right_exp.length == 1 then
-#        result = "#{left_exp}#{right_exp}"
-#        return result
-#      end
-#
-#        right_exp_list = right_exp.split(" ")
-#        right_exp_list.each.with_index{|token, index|
-#
-#        # tokenが数字の場合
-#        if integer_string? token then
-#
-#          calc_val = left_exp.to_i * token.to_i
-#          if right_exp_list[index - 1] == "\-" then
-#
-#            if calc_val == 0 then
-#              result.slice!(-2, 2)
-#            elsif calc_val < 0 then
-#              result.slice!(-2, 2)
-#              result << "+ #{calc_val} "
-#            else
-#              result << "#{calc_val.abs} "
-#            end
-#          else
-#            if calc_val == 0 then
-#
-#            elsif calc_val < 0 then
-#              result.slice!(-2, 2)
-#              result << "\- #{calc_val.to_s.delete("\-")} "
-#            else
-#              result << "#{calc_val.to_s} "
-#            end
-#          end
-#
-#        # tokenが数字ではない場合
-#        else
-#          if /[a-z]/ =~ token then
-#            result_tmp = "#{left_exp}#{token.delete("\-")}"
-#            if token.slice(0) == "\-" then
-#              if right_exp_list[index - 1] == "\-" then
-#                result.slice!(-2, 2)
-#                result << "#{result_tmp} "
-#              else
-#                result << "\-#{result_tmp} "
-#              end
-#            else
-#              result << "#{result_tmp} "
-#            end
-#          else
-#            if !result.empty? then
-#              result << "#{token} "
-#            end
-#          end
-#        end
-#      }
-      result.chop!
-      return result
+    # 数式の形成
+    result = ""
+    result_tmp.split(" ").each_with_index{|token, index|
+      if index != 0 && token.include?("\+") then
+        result << token.gsub(/\+/, "\+ ")
+      elsif index != 0 &&  token.include?("\-") then
+        result << token.gsub(/\-/, "\- ")
+      else
+        result << token
+      end
+      result << " "
+    }
+    result.chop!
+    return result
   end
 
 end

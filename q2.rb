@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require './expression.rb'
+require 'pry'
 
 # ポーランド記法の式を展開します。
 def get_expand_exp rpn_exp
@@ -29,8 +30,8 @@ def get_expand_exp rpn_exp
       # 計算処理の実行
       if token == "\+" || token == "-" then
         stack.push Calculation.add_sub(left_exp, right_exp, token)
-      else 
-        stack.push Calculation.multiple(left_exp, right_exp, token)
+      else
+        stack.push Calculation.multipl(left_exp, right_exp, token)
       end
 
     else
@@ -46,8 +47,6 @@ exp = gets.chomp
 # 取得した式を逆ポーランド記法へ変換
 rpn_exp = Rpn.get_rpn exp
 expand_exp = get_expand_exp rpn_exp
-
-puts expand_exp
 
 # 空行Read
 gets
