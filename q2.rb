@@ -8,7 +8,7 @@ def get_expand_exp rpn_exp
   expand_exp = ""
   stack = []
   left_exp = ""
-  right_Exp = ""
+  right_exp = ""
   rpn_exp.split(" ").each.with_index{|token, index|
     if /[\+\-\*\/]/ =~ token then
 
@@ -26,13 +26,11 @@ def get_expand_exp rpn_exp
         next
       end
 
-      case token
-      when "+" then
-        stack.push(Calculation.add(left_exp, right_exp))
-      when "-" then
-        stack.push(Calculation.sub(left_exp, right_exp))
-      when "*" then
-        stack.push(Calculation.multipl(left_exp, right_exp))
+      # 計算処理の実行
+      if token == "\+" || token == "-" then
+        stack.push Calculation.add_sub(left_exp, right_exp, token)
+      else 
+        stack.push Calculation.multiple(left_exp, right_exp, token)
       end
 
     else
